@@ -26,7 +26,15 @@ def generate_launch_description():
         }]
     )
 
+    websocket_node = Node(
+        package="rosbridge_server",
+        executable="rosbridge_websocket",
+        name="rosbridge_websocket",
+        output="screen"
+    )
+
     return LaunchDescription([
        map_server_node,
-       lifecycle_manager_node
+       lifecycle_manager_node,
+       websocket_node
     ])
