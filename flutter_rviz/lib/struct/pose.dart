@@ -16,7 +16,7 @@ class Orientation {
       {required this.x, required this.y, required this.z, required this.w});
 }
 
-export class Pose {
+class Pose {
   Position position;
   Orientation orientation;
 
