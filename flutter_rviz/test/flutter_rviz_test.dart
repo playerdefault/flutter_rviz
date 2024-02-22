@@ -4,10 +4,11 @@ import "dart:async";
 import "package:web_socket_channel/web_socket_channel.dart";
 import "package:web_socket_channel/status.dart" as status;
 import "package:flutter_rviz/struct/occupancy_grid.dart";
+import "package:flutter_rviz/struct/pose.dart";
 
 import 'package:flutter_rviz/flutter_rviz.dart';
 
-Future callROSService() async {
+Future<OccupancyGrid> callROSServiceAndGetOG() async {
   final channel = WebSocketChannel.connect(Uri.parse("ws://localhost:9090"));
 
   final serviceCallMessage = jsonEncode({
@@ -18,14 +19,10 @@ Future callROSService() async {
   channel.sink.add(serviceCallMessage);
 
   final completer = Completer<void>();
-
-  OccupancyGrid og;
+  late OccupancyGrid result;
 
   channel.stream.listen((message) {
-    final response = jsonDecode(message);
-
-    // Printing occupancy grid
-    print(response["values"]["map"]["data"]);
+    result = OccupancyGrid.fromJson(jsonDecode(message)["values"]["map"]);
 
     if (!completer.isCompleted) {
       completer.complete();
@@ -47,10 +44,26 @@ Future callROSService() async {
 
   // Optionally, close the connection explicitly here.
   channel.sink.close();
+  return result;
 }
 
 void main() {
-  test("call map service and print output", () async {
-    await callROSService();
+  // PREREQUISITES: ros2 humble should be installed on your system. You also need to install the necessary packages inside
+  // the ros2_ws. Check the CMakeLists.txt inside test/ros2_ws/src/map_pub for what packages are needed. 
+
+  // IMPORTANT: Make sure to navigate to ros2_ws inside the test folder, source the install space,
+  // and execute the launch file. Relevant commands:
+  // cd ros2_ws
+  // colcon build (wait for the build to finish)
+  // source install/setup.bash
+  // ros2 launch map_pub main.launch.py
+
+  // Above instructions need to be executed to test this properly.
+
+  test("call map service via ros websockets", () async {
+    final og = await callROSServiceAndGetOG();
+
+    // Assert that og is not null
+    expect(og, isNotNull);
   });
 }
