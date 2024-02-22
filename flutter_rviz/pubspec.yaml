@@ -1,7 +1,7 @@
 name: flutter_rviz
-description: "A new Flutter package project."
+description: "Flutter Package for ROS Viz Data"
 version: 0.0.1
-homepage:
+homepage: https://github.com/playerdefault/flutter_rviz
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
