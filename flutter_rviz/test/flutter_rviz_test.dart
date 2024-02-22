@@ -1,3 +1,4 @@
+import "package:flutter/material.dart";
 import 'package:flutter_test/flutter_test.dart';
 import "dart:convert";
 import "dart:async";
@@ -57,11 +58,21 @@ void main() {
 
   // Above instructions need to be executed to test this properly.
 
-  test("call map service via ros websockets", () async {
-    final og = await callROSServiceAndGetOG();
-    final pngImgData = occupancyGridToImageBytes(og);
+  testWidgets("Display image from call map service via ROS websockets",
+      (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final og = await callROSServiceAndGetOG();
+      final pngImgData = occupancyGridToImageBytes(og);
 
-    // Assert that og is not null
-    expect(og, isNotNull);
+      // Build a MaterialApp with an Image widget to display the image
+      await tester.pumpWidget(
+          MaterialApp(home: Scaffold(body: Image.memory(pngImgData))));
+
+      // Assert that og is not null
+      expect(og, isNotNull);
+
+      // Optional: You can add further assertions here, e.g., to check that the Image widget is in the tree
+      expect(find.byType(Image), findsOneWidget);
+    });
   });
 }
